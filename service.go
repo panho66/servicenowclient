@@ -18,7 +18,7 @@ import (
 const CipherKey = "0123456789012345"
 
 type Client struct {
-	Username, Password, Instance, key, ProxyURL string
+	Username, Password, Instance, Key, Proxy string
 }
 
 /*
@@ -48,8 +48,8 @@ func (e Err) Error() string {
 
 func (c *Client) GetUserName() string {
 	key := CipherKey
-	if c.key != "" {
-		key = c.key
+	if c.Key != "" {
+		key = c.Key
 	}
 	CIPHER_KEY := []byte(key)
 	decrypted, err := decrypt(CIPHER_KEY, c.Username)
@@ -61,8 +61,8 @@ func (c *Client) GetUserName() string {
 }
 func (c *Client) GetPassword() string {
 	key := CipherKey
-	if c.key != "" {
-		key = c.key
+	if c.Key != "" {
+		key = c.Key
 	}
 	CIPHER_KEY := []byte(key)
 	decrypted, err := decrypt(CIPHER_KEY, c.Password)
@@ -143,8 +143,8 @@ func (c *Client) PerformFor(table string, opts url.Values, body interface{}, out
 	log.Debug("url=" + u)
 
 	var client *http.Client
-	if c.ProxyURL != "" {
-		proxyURL, err := url.Parse(c.ProxyURL)
+	if c.Proxy != "" {
+		proxyURL, err := url.Parse(c.Proxy)
 		if err == nil {
 			transport := &http.Transport{
 				Proxy: http.ProxyURL(proxyURL),
@@ -154,7 +154,7 @@ func (c *Client) PerformFor(table string, opts url.Values, body interface{}, out
 			}
 			
 		} else {
-			log.Debug("parse proxyURL failed. proxyURL=",ProxyURL,err)
+			log.Debug("parse proxyURL failed. proxyURL=",c.Proxy,err)
 			client = &http.Client{}
 		}
 	} else {
