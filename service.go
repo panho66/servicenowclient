@@ -18,7 +18,7 @@ import (
 const CipherKey = "0123456789012345"
 
 type Client struct {
-	Username, Password, Instance, key, proxyURL string
+	Username, Password, Instance, key, ProxyURL string
 }
 
 /*
@@ -143,8 +143,8 @@ func (c *Client) PerformFor(table string, opts url.Values, body interface{}, out
 	log.Debug("url=" + u)
 
 	var client *http.Client
-	if c.proxyURL != "" {
-		proxyURL, err := url.Parse(c.proxyURL)
+	if c.ProxyURL != "" {
+		proxyURL, err := url.Parse(c.ProxyURL)
 		if err == nil {
 			transport := &http.Transport{
 				Proxy: http.ProxyURL(proxyURL),
@@ -154,7 +154,7 @@ func (c *Client) PerformFor(table string, opts url.Values, body interface{}, out
 			}
 			
 		} else {
-			log.Debug("parse proxyURL failed. proxyURL=",err)
+			log.Debug("parse proxyURL failed. proxyURL=",ProxyURL,err)
 			client = &http.Client{}
 		}
 	} else {
