@@ -18,7 +18,7 @@ import (
 const CipherKey = "0123456789012345"
 
 type Client struct {
-	Username, Password, Instance, key string
+	Username, Password, Instance, key, proxyURL string
 }
 
 /*
@@ -142,7 +142,24 @@ func (c *Client) PerformFor(table string, opts url.Values, body interface{}, out
 	u := fmt.Sprintf("https://%s/%s?sysparm_query=%s", c.Instance, table, opts.Encode())
 	log.Debug("url=" + u)
 
-	client := &http.Client{}
+	var client *http.Client
+	if c.proxyURL != "" {
+		proxyURL, err := url.Parse(c.proxyURL)
+		if err == nil {
+			transport := &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			}
+			client = &http.Client{
+				Transport: transport,
+			}
+			
+		} else {
+			log.Debug("parse proxyURL failed. proxyURL=",err)
+			client = &http.Client{}
+		}
+	} else {
+		client = &http.Client{}
+	}
 	req, err := http.NewRequest("GET", u, nil)
 	req.SetBasicAuth(c.GetUserName(), c.GetPassword())
 	resp, err := client.Do(req)
